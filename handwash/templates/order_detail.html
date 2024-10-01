@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Detail</title>
+    <style>
+        /* Styles for the page layout */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f2f2f2;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1, h3, p {
+            margin: 0 0 10px 0;
+        }
+        h1 {
+            color: #333;
+        }
+        h3 {
+            color: #666;
+        }
+        p {
+            color: #444;
+        }
+        strong {
+            font-weight: bold;
+        }
+        .item-container {
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            margin-bottom: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Detail</h1>
+        {% if request.user.is_superuser %}
+        <p><strong>Order ID:</strong> {{ order.id }}</p>
+        {% endif %}
+        <p><strong>Full Name:</strong> {{ order.fullname }}</p>
+        <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}, {{ order.postal_code }}</p>
+        
+        <!-- <h3>Order Items</h3> -->
+        
+        {% for item in items %}
+        <div class="item-container">
+            <p><strong>Product:</strong> {{ item.product.name }}</p>
+            <p><strong>Quantity:</strong> {{ item.quantity }}</p>
+        </div>
+        {% endfor %}
+        
+        <p><strong>Total Amount:</strong> ${{ order.total_amount }}</p>
+        
+        <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+    </div>
+</body>
+</html>

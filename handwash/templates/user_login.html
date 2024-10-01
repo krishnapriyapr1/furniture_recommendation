@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Login</title>
+  
+  <!-- Include Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  
+  <!-- New Style -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #cbd6ee;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 350px;
+      background: #fff;
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative; /* Added */
+    }
+
+    .form-control {
+      width: calc(100% - 30px); /* Adjusted width */
+      padding: 15px;
+      border-radius: 25px;
+      border: 2px solid #ccc;
+      transition: border-color 0.3s;
+      font-size: 16px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+
+    .show-password {
+      cursor: pointer;
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 25px;
+      background-color: #007bff;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    .errorlist {
+      color: red;
+      margin-top: 10px;
+    }
+
+    .register-message {
+      text-align: center;
+      margin-top: 20px;
+      color: #555;
+    }
+
+    .register-link {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .register-link:hover {
+      color: #0044cc;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Login</h1>
+
+    <form method="post" class="form">
+      <!-- CSRF token -->
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" class="form-control" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <div class="password-wrapper"> <!-- Added wrapper div -->
+          <input type="password" id="password" name="password" placeholder="Enter your password" class="form-control" required>
+          <span class="show-password" onclick="showPassword('password')"><i class="fas fa-eye"></i></span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Login</button>
+    </form>
+
+    <!-- Error handling -->
+    {% if form.errors %}
+      <div class="errorlist">
+        <ul>
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <li>{{ field }}: {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    <!-- Reset password link -->
+  
+
+    <!-- Registration link -->
+    <p class="register-message">Sign Up? <a href="{% url 'user_register' %}" class="register-link">Register here</a></p>
+    <p class="register-message">Forgot Password? <a href="{% url 'request_password_reset' %}" class="register-link">Click here</a></p>
+    {% if messages %}
+    <div class="errorlist">
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  </div>
+
+  <!-- Script for toggling password visibility -->
+  <script>
+    function showPassword(fieldId) {
+      var passwordInput = document.getElementById(fieldId);
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        document.querySelector('.show-password i').classList.remove('fa-eye');
+        document.querySelector('.show-password i').classList.add('fa-eye-slash');
+      } else {
+        passwordInput.type = 'password';
+        document.querySelector('.show-password i').classList.remove('fa-eye-slash');
+        document.querySelector('.show-password i').classList.add('fa-eye');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #686161;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #131111;
+            text-align: center;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="file"],
+        input[type="submit"] {
+            width: 50%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        input[type="submit"] {
+            background-color: #577fbd;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #577fbd;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        p {
+            color: #0f0f0f;
+        }
+
+        /* Style for Cancel link */
+        .cancel-link {
+            display: inline-block;
+            text-decoration: none;
+            padding: 8px 16px;
+            margin-right: 10px;
+            border-radius: 4px;
+            background-color: #c41717;
+            color: #fff;
+            transition: background-color 0.3s;
+        }
+
+        .cancel-link:hover {
+            background-color: #999;
+        }
+    </style>
+</head>
+<body>
+    <h1>Update Product</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <!-- Display the image if it exists -->
+            {% if product.image %}
+                <!-- Display the image using an img tag -->
+                <img src="{{ product.image.url }}" alt="Product Image">
+            {% else %}
+                <!-- Display a message if the image is not available -->
+                <p>No image available</p>
+            {% endif %}
+        </div>
+        <!-- Display the rest of the form fields -->
+        {{ form.as_p }}
+        <input type="submit" value="Save Changes">
+        <a href="{% url 'adminpage' %}" class="cancel-link">Cancel</a>
+    </form>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d9e2f3, #ffffff);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .chat-container {
+            width: 420px;
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #4A4A4A;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .messages {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            max-width: 75%;
+            font-size: 16px;
+            word-wrap: break-word;
+            transition: background-color 0.3s ease;
+        }
+
+        .message strong {
+            font-weight: bold;
+        }
+
+        .message.you {
+            background-color: #DFFFD6; /* Light green */
+            align-self: flex-end;
+            text-align: right;
+        }
+
+        .message.bot {
+            background-color: #E0F7FA; /* Light cyan */
+        }
+
+        /* Input styles */
+        .input-container {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            outline: none;
+            background-color: #f1f1f1;
+        }
+
+        button {
+            background-color: #007BFF; /* Bootstrap primary color */
+            border: none;
+            color: white;
+            padding: 15px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            background-color: #004085;
+        }
+
+        /* Scrollbar style */
+        .messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .messages::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        .messages::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Chatbot typing indicator */
+        .typing-indicator {
+            position: absolute;
+            bottom: 75px;
+            left: 20px;
+            display: none;
+            font-style: italic;
+            color: #888;
+            font-weight: bold;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message {
+            animation: fadeIn 0.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <h1>Furniture  Chatbot</h1>
+        <button onclick="location.href='{% url 'index' %}'" style="position: absolute; top: 0; left: 0; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Home
+        </button>
+        <div class="messages" id="messages"></div>
+        <div class="typing-indicator" id="typing-indicator">Bot is cooking answer...</div>
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="Type your message...">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Typing indicator function
+            function showTyping() {
+                $('#typing-indicator').fadeIn();
+            }
+
+            function hideTyping() {
+                $('#typing-indicator').fadeOut();
+            }
+
+            // Send message function
+            function sendMessage(userInput) {
+                $('#messages').append(`<div class="message you"><strong>You:</strong> ${userInput}</div>`);
+                $('#user-input').val("");  // Clear input
+                showTyping();
+
+                // Simulate chatbot delay before responding
+                setTimeout(function () {
+                    // Send AJAX request to Django backend
+                    $.ajax({
+                        url: "{% url 'chatbot' %}",
+                        type: "POST",
+                        data: {
+                            user_input: userInput,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            hideTyping();
+                            const chatbotResponse = response.response;
+                            $('#messages').append(`<div class="message bot"><strong>Chatbot:</strong> ${chatbotResponse}</div>`);
+                            $('#messages').scrollTop($('#messages')[0].scrollHeight); // Scroll to bottom
+                        },
+                        error: function () {
+                            hideTyping();
+                            $('#messages').append('<div class="message bot"><strong>Error:</strong> Something went wrong</div>');
+                        }
+                    });
+                }, 1000);
+            }
+
+            // Send message on button click
+            $('#send-btn').on('click', function () {
+                const userInput = $('#user-input').val();
+                if (userInput.trim() !== "") {
+                    sendMessage(userInput);
+                }
+            });
+
+            // Send message on Enter key press
+            $('#user-input').on('keypress', function (e) {
+                if (e.which == 13) {
+                    $('#send-btn').click();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <style>
+        /* Resetting default margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #072441;
+            padding: 50px;
+            text-align: right;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Grid container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            justify-items: center;
+            align-items: stretch;
+        }
+
+        /* Product styles */
+        .product {
+            text-align: center;
+            border: 2px solid #ccc;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product img {
+            width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .product .title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .product .price {
+            font-size: 16px;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn.edit-btn {
+            background-color: #4157b6;
+            color: white;
+            border: none;
+            /* Remove button border */
+        }
+
+        .btn.delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            /* Remove button border */
+        }
+
+        .btn.stock-update-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            /* Remove button border */
+        }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 50%;
+        }
+
+        /* Hover styles for buttons */
+        .btn.edit-btn:hover,
+        .btn.delete-btn:hover,
+        .btn.stock-update-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Focus styles for buttons */
+        .btn.edit-btn:focus,
+        .btn.delete-btn:focus,
+        .btn.stock-update-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+            /* Adjust color and size as needed */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="{% url 'adminpage' %}">Home</a>
+        <a href="{% url 'admin_add' %}">Add Product</a>
+        <a href="{% url 'suppliers' %}">Supplier Details</a>
+        <a href="{% url 'adminorders' %}">Order</a>
+        <a href="{% url 'user_logout' %}">Log out</a>
+    </div>
+    <h1 align="center" style="color: #140c61;">Products</h1>
+    <h1></h1>
+    <div class="grid-container">
+        {% for product in productdata %}
+        {% if product.is_active %}
+        <div class="product">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            <div class="title">{{ product.name }}</div>
+            <div class="price">Rs{{ product.price }}</div>
+            <div class="description">{{ product.description }}</div>
+            {% if product.quantity < 5 %}
+            <span class="badge">Quantity:{{ product.quantity }}</span>
+            {% endif %}
+            <a href="{% url 'edit_product' product.id %}" class="btn edit-btn">Update</a>
+            <a href="{% url 'delete_product' product.id %}" class="btn delete-btn">Delete</a><br><br>
+            {% if product.quantity < 5 %}
+            {% if product.is_approved == False %}
+            <a href="#" class="btn stock-update-btn">Already sent stock update Request</a>
+            {% else %}
+            <a href="{% url 'send_stock_update_request' product.id %}" class="btn stock-update-btn"
+                onclick="showAlert()">Send Stock Update Request</a>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <script>
+        function showAlert() {
+            alert("Stock update request successfully sent.");
+        }
+    </script>
+
+</body>
+
+</html>

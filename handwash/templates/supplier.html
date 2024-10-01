@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <style>
+        /* Resetting default margin and padding */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Header styles */
+        .header {
+            background-color: #072441;
+            padding: 50px;
+            text-align: right;
+        }
+
+        .header a {
+            color: white;
+            text-decoration: none;
+            margin: 0 20px;
+        }
+
+        .header a:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Grid container */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            justify-items: center;
+            align-items: stretch;
+        }
+
+        /* Product styles */
+        .product {
+            text-align: center;
+            border: 2px solid #ccc;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .product img {
+            width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        .product .title {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .product .price {
+            font-size: 16px;
+            color: #007bff;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn.edit-btn {
+            background-color: #4157b6;
+            color: white;
+            border: none;
+            /* Remove button border */
+        }
+
+        .btn.delete-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            /* Remove button border */
+        }
+
+        /* Hover styles for buttons */
+        .btn.edit-btn:hover,
+        .btn.delete-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* Focus styles for buttons */
+        .btn.edit-btn:focus,
+        .btn.delete-btn:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+            /* Adjust color and size as needed */
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Stay in place */
+            z-index: 1;
+            /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%;
+            /* Full width */
+            height: 100%;
+            /* Full height */
+            overflow: auto;
+            /* Enable scroll if needed */
+            background-color: rgba(0, 0, 0, 0.4);
+            /* Black w/ opacity */
+            padding-top: 100px;
+        }
+
+        /* Modal content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        /* Input field */
+        .modal-content input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="{% url 'adminpage' %}">Home</a>
+        <a href="{% url 'user_logout' %}">Log out</a>
+    </div>
+    <div class="grid-container">
+        {% for product in productdata %}
+        <div class="product">
+            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            <div class="title">{{ product.name }}</div>
+            <div class="price">Rs{{ product.price }}</div>
+            <div class="quantity">Quantity: {{ product.quantity }}</div>
+            {% if not product.is_approved %}
+            <br><br>
+            <a href="#" class="btn edit-btn" onclick="showModal('{{ product.id }}')">Update Stock</a>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+    </div>
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <form id="updateForm" method="POST" action="{% url 'update_stock' %}">
+                {% csrf_token %}
+                <label for="new_quantity">Enter quantity to add:</label>
+                <input type="number" id="new_quantity" name="new_quantity" required min="1">
+                <input type="hidden" id="productId" name="product_id">
+                <button type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+
+
+
+</body>
+<script>
+    // Function to show modal
+    function showModal(productId) {
+        document.getElementById("myModal").style.display = "block";
+        document.getElementById("productId").value = productId;
+    }
+
+    // Function to close modal
+    function closeModal() {
+        document.getElementById("myModal").style.display = "none";
+    }
+</script>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        /* Your CSS styles for the email content */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Order Confirmation</h1>
+        <p>Dear {{ fullname }},</p>
+        <p>Your order has been confirmed. Below are the details:</p>
+        <ul>
+            <li><strong>Full Name:</strong> {{ fullname }}</li>
+            <li><strong>Address:</strong> {{ address }}</li>
+            <li><strong>City:</strong> {{ city }}</li>
+            <li><strong>Postal Code:</strong> {{ postal_code }}</li>
+            <li><strong>Total Amount:</strong> ${{ total_amount }}</li>
+        </ul>
+        <p>Thank you for shopping with us!</p>
+    </div>
+</body>
+</html>

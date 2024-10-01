@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .download-buttons {
+            margin-bottom: 20px;
+        }
+        .download-buttons a {
+            text-decoration: none;
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        img {
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Your Recommendations</h1>
+
+    <!-- Buttons for downloading CSV and PDF -->
+    <div class="download-buttons">
+        <a href="{% url 'download_csv' %}">Download CSV</a>
+        <a href="{% url 'download_pdf' %}">Download PDF</a>
+    </div>
+
+  <!-- Display the visualization first -->
+{% if graphic %}
+<h2>Visualization of Recommendations by Material</h2>
+<img id="visualization" src="data:image/png;base64,{{ graphic }}" alt="Bar chart of recommendations">
+<button id="download-button" style="
+    background-color: #4CAF50; /* Green background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 15px 32px; /* Some padding */
+    text-align: center; /* Center the text */
+    text-decoration: none; /* Remove underline */
+    display: inline-block; /* Get it to display inline */
+    font-size: 16px; /* Increase font size */
+    margin: 4px 2px; /* Some margin */
+    cursor: pointer; /* Pointer/hand icon */
+    border-radius: 12px; /* Rounded corners */
+    transition-duration: 0.4s; /* 0.4 second transition effect to hover state */
+">Download Visualization</button>
+{% endif %}
+
+<!-- Include jsPDF library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+<script>
+document.getElementById('download-button').addEventListener('click', function() {
+    var img = document.getElementById('visualization');
+    var url = img.src;
+
+    // Create a new jsPDF instance
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF();
+
+    // Add the image to the PDF
+    pdf.addImage(url, 'PNG', 10, 10, 180, 160); // Adjust the dimensions as needed
+
+    // Save the PDF
+    pdf.save('visualization.pdf');
+});
+</script>
+
+
+    <!-- Display the recommendations table below the visualization -->
+    <table>
+        <thead>
+            <tr>
+                <th>Furniture Type</th>
+                <th>Material</th>
+                <th>Room Type</th>
+                <th>Color</th>
+                <th>Budget</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for recommendation in recommendations %}
+            <tr>
+                <td>{{ recommendation.furniture_type }}</td>
+                <td>{{ recommendation.material }}</td>
+                <td>{{ recommendation.room_type }}</td>
+                <td>{{ recommendation.color }}</td>
+                <td>{{ recommendation.budget }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
